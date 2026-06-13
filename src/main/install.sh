@@ -100,11 +100,10 @@ EOF
 chmod 644 "$SSL_SNIPPET" "$PROXY_SNIPPET"
 
 # ensure python venv support exists
-if ! python3 -c "import ensurepip" >/dev/null 2>&1 && ! python3 -c "import venv" >/dev/null 2>&1; then
+if ! python3 -c "import ensurepip" >/dev/null 2>&1 || ! python3 -c "import venv" >/dev/null 2>&1; then
   echo "python3 venv/ensurepip not available. Trying to install python3-venv via apt..."
   if command -v apt >/dev/null 2>&1; then
     apt update
-    # try generic package first, then try a versioned one
     apt install -y python3-venv || apt install -y python3.$(python3 -c 'import sys; print("{}.{}".format(sys.version_info.major, sys.version_info.minor))')-venv
   else
     echo "apt not found — cannot auto-install python3-venv. Please install python3-venv package manually."
