@@ -72,8 +72,17 @@ for f in "$F_CA_CREATE" "$F_SIGN_SERVICE_PY" "$F_SIGN_SERVICE_UNIT" "$F_ADD_TOKE
 done
 
 echo "--> Installing OS packages (python3, pip, jq, openssl, nginx)..."
-apt-get update -y
-apt-get install -y python3 python3-pip jq openssl nginx
+sudo apt-get update -y
+
+# Install only if not already present
+for pkg in python3 python3-pip jq openssl nginx; do
+  if ! dpkg -s "$pkg" >/dev/null 2>&1; then
+    echo "Installing $pkg..."
+    sudo apt-get install -y "$pkg"
+  else
+    echo "$pkg already installed, skipping..."
+  fi
+done
 
 # --- Creating nginx snippets for TLS and proxy config ---
 echo "--> Creating nginx snippets for centralized TLS and proxy settings"
